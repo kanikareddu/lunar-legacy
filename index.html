@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<!-- Lunar Legacy © 2026 Kanika Reddu - Akashganga. All rights reserved. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNAR LEGACY | Humanity on the Moon</title>
+<meta name="author" content="Kanika Reddu, Akashganga">
+<meta name="copyright" content="© 2026 Kanika Reddu, Akashganga. All rights reserved.">
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03050c;--line:rgba(150,181,230,.22);--text:#edf1fa;--muted:#a4aec2;--brand:"Nasalization","Michroma","Eurostile","Arial Black",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{min-height:100%;overflow-x:hidden;color:var(--text);background:var(--bg);font-family:"Manrope",Arial,sans-serif}
+:focus-visible{outline:2px solid #a6caff;outline-offset:2px}
+body::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse at 78% 12%,rgba(83,91,173,.32),transparent 34%),radial-gradient(ellipse at 20% 42%,rgba(31,66,132,.25),transparent 35%),radial-gradient(ellipse at 65% 75%,rgba(70,48,119,.2),transparent 38%),radial-gradient(ellipse at 5% 90%,rgba(25,70,119,.25),transparent 30%),linear-gradient(125deg,#02040b,#080c1b 48%,#03050d)}
+#star-background{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.nebula{position:fixed;width:75vw;height:75vw;max-width:900px;max-height:900px;border-radius:50%;filter:blur(100px);opacity:.12;pointer-events:none;z-index:-2}
+.nebula.one{background:#435cb9;top:-35%;right:-25%}.nebula.two{background:#674b9b;bottom:-45%;left:-25%}
+nav{position:fixed;top:0;left:0;width:100%;height:65px;padding:0 5%;display:flex;justify-content:space-between;align-items:center;z-index:50;background:rgba(3,5,12,.72);border-bottom:1px solid rgba(151,177,220,.14);backdrop-filter:blur(18px)}
+.logo{display:flex;align-items:center;gap:13px;font:400 13px var(--brand);letter-spacing:3px;white-space:nowrap}
+.logo-moon{font-size:27px;color:#e0e8f5}.logo span{color:#a9caff}
+nav .links{display:flex;gap:32px}
+nav a{color:#c5cddd;text-decoration:none;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1px;transition:.25s}
+nav a:hover{color:#fff}
+.data-indicator{font-family:"DM Mono",monospace;font-size:10px;color:#d5e0f2}
+.data-indicator::before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:#91e9dc;box-shadow:0 0 10px #91e9dc}
+.hero{min-height:100vh;padding:100px 6% 60px;display:grid;grid-template-columns:40% 60%;align-items:center;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-copy{position:relative;z-index:4;padding-top:20px}
+.eyebrow{color:#a7caff;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:3px;line-height:1.8;text-transform:uppercase}
+.hero h1{font:400 clamp(34px,4.7vw,70px)/1.15 var(--brand);letter-spacing:3px;margin:22px 0}
+.hero h1 span{display:block;color:#8bbaff}
+.hero-subtitle{font-size:17px;line-height:1.8;color:#d5dbea;max-width:330px}
+.primary-btn{display:inline-flex;align-items:center;gap:25px;margin-top:30px;padding:13px 21px;border:1px solid #8bbcff;border-radius:12px;color:#e7f0ff;text-decoration:none;font-size:11px;letter-spacing:1px;background:rgba(38,65,111,.16);box-shadow:0 0 18px rgba(111,164,255,.12);transition:.25s}
+.primary-btn:hover{background:rgba(94,139,208,.25);box-shadow:0 0 28px rgba(111,164,255,.3)}
+.hero-distance{display:flex;align-items:center;gap:13px;margin-top:55px;color:#b6c3d9;font-size:11px;line-height:1.6}
+.distance-icon{font-size:25px;color:#cbd8ec}
+.moon-area{height:min(75vh,650px);min-height:390px;position:relative;cursor:grab;border-radius:16px}
+.moon-area:active{cursor:grabbing}
+#moon-container{position:absolute;inset:0;z-index:2}
+#moon-container canvas{display:block;width:100%;height:100%}
+.moon-orbit{position:absolute;width:85%;height:72%;top:14%;left:7%;border:1px solid rgba(133,173,239,.18);border-radius:50%;transform:rotate(-18deg);pointer-events:none}
+.moon-orbit.second{width:95%;height:80%;top:10%;left:2%;transform:rotate(17deg);border-color:rgba(133,173,239,.1)}
+.moon-caption{position:absolute;right:1%;bottom:2%;color:#c4ccdb;font-size:10px;z-index:4;pointer-events:none}
+.moon-caption span{color:#a8caff;margin:0 6px}
+.moon-tools{position:absolute;left:1%;bottom:2%;z-index:5;display:flex;gap:6px}
+.tool-btn{min-width:34px;height:34px;padding:0 11px;border:1px solid var(--line);border-radius:17px;background:rgba(9,15,29,.82);color:#dce8f7;font:11px "DM Mono",monospace;cursor:pointer;transition:.2s}
+.tool-btn:hover{border-color:#9fc4ff;background:rgba(104,148,211,.25)}
+#tip{position:fixed;z-index:60;pointer-events:none;display:none;padding:6px 10px;border:1px solid rgba(157,193,255,.45);border-radius:8px;background:rgba(9,15,29,.94);color:#e7f0ff;font-size:11px;max-width:240px}
+.section{padding:90px 6%;border-bottom:1px solid rgba(151,177,220,.13)}
+.section-heading{font-size:clamp(27px,3vw,39px);font-weight:400;margin:8px 0 14px;letter-spacing:-.7px}
+.section-intro{color:var(--muted);font-size:13px;line-height:1.85;max-width:570px}
+.section-number{color:#9fc4ff;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px}
+.facts-layout,.current-layout{display:grid;grid-template-columns:38% 62%;align-items:center;gap:25px}
+.current-layout{grid-template-columns:35% 65%}
+.facts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.fact-card,.current-card{border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,rgba(23,34,58,.64),rgba(7,12,24,.78));transition:.3s}
+.fact-card{min-height:165px;padding:22px}
+.fact-card:hover,.current-card:hover{border-color:rgba(157,193,255,.5);transform:translateY(-3px)}
+.fact-symbol{font-size:25px;margin-bottom:14px;color:#c4d5f3}
+.fact-label{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;color:#b8c7df}
+.fact-card h3{font-size:20px;font-weight:500;margin:8px 0}
+.fact-card p{font-size:11px;color:#a7b5cd;line-height:1.6}
+.archive-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.9fr);gap:24px;margin-top:30px;align-items:start}
+.archive-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.search-box{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(4,8,17,.72);padding:11px 14px;border-radius:30px;min-width:220px;flex:1;max-width:310px}
+.search-box input{width:100%;background:transparent;border:none;outline:none;color:#fff;font:inherit;font-size:11px}
+.search-box input::placeholder{color:#8d9ab0}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filter-btn{padding:8px 12px;border:1px solid transparent;border-radius:20px;background:rgba(18,27,46,.7);color:#aebbd0;font:9px "Manrope",sans-serif;cursor:pointer;transition:.2s}
+.filter-btn:hover,.filter-btn.active{color:#fff;border-color:#9fc4ff;background:rgba(104,148,211,.25);box-shadow:0 0 12px rgba(110,162,244,.2)}
+.result-count{color:#8d9ab0;font-size:10px;margin-bottom:12px}
+.archive-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.year-head{grid-column:1/-1;font:500 11px "DM Mono",monospace;letter-spacing:2px;color:#9fc4ff;padding:8px 0 0 12px;border-left:2px solid #4d77b8}
+.archive-card{min-width:0;overflow:hidden;border:1px solid rgba(137,168,215,.26);border-radius:12px;background:rgba(7,12,23,.8);cursor:pointer;transition:.25s}
+.archive-card:hover,.archive-card.selected{border-color:#a6caff;transform:translateY(-3px);box-shadow:0 8px 30px rgba(71,113,184,.16)}
+.card-image{height:110px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 120%,#626b7c,#242c3b 48%,#080c16 100%)}
+.card-image svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#cfe0fa;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.image-label{position:absolute;right:10px;top:9px;font:9px "DM Mono",monospace;color:#fff}
+.card-content{padding:13px}
+.card-year{font:9px "DM Mono",monospace;color:#9fc4ff;letter-spacing:1px}
+.card-content h3{font-size:13px;font-weight:500;margin:8px 0 5px;line-height:1.4}
+.card-content p{color:#a7b4c9;font-size:10px;line-height:1.6}
+.status{display:inline-block;margin-top:12px;padding:5px 9px;border-radius:20px;font-size:9px;background:rgba(100,124,166,.2);color:#c5d7f2}
+.status.active{color:#9de8d4;background:rgba(55,137,113,.2)}
+.status.passive{color:#c8b6f3;background:rgba(115,81,163,.2)}
+.status.impact{color:#e5c79d;background:rgba(160,113,53,.2)}
+.detail-panel{position:sticky;top:85px;border:1px solid rgba(146,181,237,.34);border-radius:14px;background:linear-gradient(145deg,rgba(17,27,47,.95),rgba(5,10,21,.96));overflow:hidden;min-height:420px;box-shadow:0 15px 45px rgba(0,0,0,.22)}
+.detail-top{padding:22px 22px 12px}
+.detail-top h3{font-size:20px;font-weight:500;margin-bottom:6px}
+.detail-subtitle{font-size:11px;color:#aabbd5}
+.detail-year{float:right;font:10px "DM Mono",monospace;color:#c5d5ed}
+.detail-image{height:150px;margin:5px 18px 15px;border-radius:8px;background:radial-gradient(ellipse at 50% 100%,#818b9b,#303949 55%,#0a101d);position:relative;overflow:hidden}
+.detail-image svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#e4eefc;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card-image img,.detail-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}.card-image img.ok,.detail-image img.ok{opacity:1}.photo-credit{padding:0 22px;font-size:9px;line-height:1.5;color:#7f8ca3}.photo-credit a{color:#9eb8df}.detail-body{padding:0 22px 22px}
+.detail-body p{font-size:11px;color:#bdc8d9;line-height:1.8;margin:10px 0}
+.detail-body strong{color:#e3ebf7;font-weight:500}
+.detail-rule{height:1px;background:rgba(153,183,230,.13);margin:15px 0}
+.detail-link{display:inline-flex;align-items:center;gap:12px;color:#c7ddff;border:1px solid #789ac9;border-radius:8px;padding:10px 14px;margin:12px 8px 0 0;font-size:10px;text-decoration:none;transition:.2s}
+.detail-link:hover{background:rgba(103,151,222,.2)}
+.close-detail,.modal-close{float:right;border:0;color:#bfcadd;background:transparent;font-size:23px;cursor:pointer}
+.current-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.current-card{padding:20px 12px;text-align:center;border-radius:11px}
+.current-icon{font-size:27px;color:#d6e5ff;margin-bottom:12px}
+.current-card h3{font-size:12px;font-weight:500;margin-bottom:7px}
+.current-card p{font-size:9px;color:#aab7cd;line-height:1.7}
+.mission-state{display:block;margin-top:12px;color:#9de8d4;font-size:9px;line-height:1.6}
+.review-note{margin-top:14px;font:9px "DM Mono",monospace;color:#7f8ca3}
+footer{padding:35px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#8998b2;font-size:10px;letter-spacing:.5px}
+.footer-brand{color:#d7e2f5;letter-spacing:3px;font:400 12px var(--brand)}
+.footer-links{display:flex;gap:16px}
+footer a{color:#9eb8df;text-decoration:none}
+.credits{padding:0 6% 32px;text-align:center;font-size:10px;line-height:1.8;color:#7f8ca3}.credits strong{color:#b9c6dc;font-weight:500}
+#detail-modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px}
+.modal-content{width:min(600px,100%);max-height:85vh;overflow-y:auto;border:1px solid rgba(153,190,248,.4);border-radius:15px;background:#0b1221;padding:28px;box-shadow:0 20px 70px rgba(0,0,0,.5)}
+.modal-content h2{color:#b9d4ff;font-size:23px;font-weight:500;margin:12px 0 20px}
+.modal-content p{color:#c1ccdd;font-size:12px;line-height:1.85;margin:12px 0}
+.modal-content strong{color:#f0f4fb;font-weight:500}
+.modal-note{color:#91b9f0!important;font-size:10px!important;border-top:1px solid var(--line);padding-top:15px;margin-top:20px!important}
+@media(max-width:950px){.hero{grid-template-columns:1fr 1fr;padding-left:5%;padding-right:5%}.hero h1{letter-spacing:5px}.facts-layout,.current-layout,.archive-layout{grid-template-columns:1fr}.detail-panel{position:relative;top:auto}}
+@media(max-width:650px){
+nav{height:58px;padding:0 4%}nav .links{gap:11px}nav a{font-size:8px}.logo{font-size:10px;letter-spacing:2px;gap:7px}.logo-moon{font-size:21px}.data-indicator{display:none}
+.hero{min-height:0;display:flex;flex-direction:column;padding-top:110px;padding-bottom:40px}
+.hero h1{font-size:clamp(30px,10vw,46px)}.hero-subtitle{font-size:14px}.hero-distance{margin-top:25px}
+.moon-area{width:100%;height:min(88vw,420px);min-height:300px;margin-top:10px}
+.section{padding:70px 5%}.facts-grid{grid-template-columns:1fr}.fact-card{min-height:130px}
+.archive-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.archive-toolbar{align-items:stretch}.search-box{max-width:none}
+.current-grid{grid-template-columns:repeat(2,1fr)}footer{flex-direction:column;text-align:center}}
+@media(max-width:420px){.archive-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="nebula one"></div><div class="nebula two"></div><div id="star-background"></div>
+<div id="tip" role="tooltip"></div>
+
+<nav>
+  <div class="logo"><span class="logo-moon">☾</span>LUNAR <span>LEGACY</span></div>
+  <div class="links">
+    <a href="#explore">EXPLORE</a><a href="#archive">ARCHIVE</a><a href="#about">ABOUT</a><a href="#current">LIVE MISSIONS</a>
+  </div>
+  <div class="data-indicator">NASA DATA</div>
+</nav>
+
+<section class="hero" id="explore">
+  <div class="hero-copy">
+    <div class="eyebrow">A DIGITAL ARCHIVE OF SPACE HISTORY</div>
+    <h1>LUNAR<span>LEGACY</span></h1>
+    <p class="hero-subtitle">Humanity left its mark.<br>Discover where.</p>
+    <a class="primary-btn" href="#archive">EXPLORE THE MOON <span>→</span></a>
+    <div class="hero-distance"><span class="distance-icon">◉</span><span>384,400 km from Earth<br>(average)</span></div>
+  </div>
+  <div class="moon-area" id="moon-area" tabindex="0" role="application" aria-label="Interactive 3D Moon. Use the left and right arrow keys to step through archive sites.">
+    <div class="moon-orbit"></div><div class="moon-orbit second"></div>
+    <div id="moon-container"></div>
+    <div class="moon-tools">
+      <button class="tool-btn" id="zoom-in" aria-label="Zoom in">+</button>
+      <button class="tool-btn" id="zoom-out" aria-label="Zoom out">−</button>
+      <button class="tool-btn" id="reset-view">Reset view</button>
+      <button class="tool-btn" id="spin-toggle" aria-pressed="true">Rotation: on</button>
+    </div>
+    <div class="moon-caption">Drag to rotate <span>·</span> Click a marker</div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="facts-layout">
+    <div>
+      <div class="section-number">01 / THE MOON</div>
+      <h2 class="section-heading">A world of its own.</h2>
+      <p class="section-intro">The Moon has been visited by humans, landers, rovers and scientific instruments. From the first impact to modern missions, it remains a silent witness to our exploration.<br><br>Every object has a story. This is where those stories live.</p>
+      <a class="primary-btn" href="#archive">LEARN MORE <span>→</span></a>
+    </div>
+    <div class="facts-grid">
+      <div class="fact-card"><div class="fact-symbol">◉</div><div class="fact-label">DISTANCE</div><h3>384,400 km</h3><p>Average distance from Earth.</p></div>
+      <div class="fact-card"><div class="fact-symbol">☾</div><div class="fact-label">DIAMETER</div><h3>3,474 km</h3><p>The Moon’s approximate size.</p></div>
+      <div class="fact-card"><div class="fact-symbol">✧</div><div class="fact-label">AGE</div><h3>4.5 billion years</h3><p>Estimated age of our natural satellite.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="archive">
+  <div class="section-number">02 / THE ARCHIVE</div>
+  <h2 class="section-heading">Objects left behind.</h2>
+  <p class="section-intro">Explore lunar missions and the equipment they left on the Moon — from landers and rovers to experiments and impact sites.</p>
+  <div class="archive-layout">
+    <div>
+      <div class="archive-toolbar">
+        <div class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" aria-label="Search archive" placeholder="Search missions or objects..."></div>
+        <div class="filters" id="view-toggle" role="group" aria-label="View">
+          <button class="filter-btn active" data-view="grid">Grid</button>
+          <button class="filter-btn" data-view="timeline">Timeline</button>
+        </div>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Filter by type">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="lander">Landers</button>
+        <button class="filter-btn" data-filter="rover">Rovers</button>
+        <button class="filter-btn" data-filter="experiment">Experiments</button>
+        <button class="filter-btn" data-filter="impact">Impact Sites</button>
+      </div>
+      <div class="result-count" id="result-count" aria-live="polite"></div>
+      <div class="archive-grid" id="archive-cards"></div>
+    </div>
+    <aside class="detail-panel" id="detail-panel" aria-live="polite">
+      <div class="detail-top">
+        <button class="close-detail" id="clear-detail" aria-label="Clear selection">×</button>
+        <div class="detail-year" id="detail-year"></div>
+        <h3 id="detail-title">Select a record</h3>
+        <div class="detail-subtitle" id="detail-subtitle">Lunar archive</div>
+      </div>
+      <div class="detail-image" id="detail-image"></div>
+      <div class="photo-credit" id="photo-credit"></div>
+      <div class="detail-body" id="detail-body"><p>Select an archive card or a marker on the Moon to explore its history, scientific purpose and known status.</p></div>
+    </aside>
+  </div>
+</section>
+
+<section class="section" id="current">
+  <div class="current-layout">
+    <div>
+      <div class="section-number">03 / CURRENT MISSIONS</div>
+      <h2 class="section-heading">The Moon, still active.</h2>
+      <p class="section-intro">New missions continue to explore our lunar neighbour, from scientific research to future human exploration.</p>
+      <div class="review-note">Last reviewed November 2026. Schedules change; check agency sites.</div>
+      <a class="primary-btn" href="https://www.nasa.gov/mission/" target="_blank" rel="noopener">SEE NASA MISSIONS <span>→</span></a>
+    </div>
+    <div class="current-grid" id="current-grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div><div class="footer-brand">☾ LUNAR LEGACY</div><div style="margin-top:8px;font-size:9px;letter-spacing:2px">TEAM AKASHGANGA</div></div>
+  <div>Exploring humanity’s footprint beyond Earth.</div>
+  <div class="footer-links">
+    <a href="https://www.nasa.gov/" target="_blank" rel="noopener">NASA</a>
+    <a href="https://www.esa.int/" target="_blank" rel="noopener">ESA</a>
+    <a href="https://www.cnsa.gov.cn/" target="_blank" rel="noopener">CNSA</a>
+    <a href="https://www.isro.gov.in/" target="_blank" rel="noopener">ISRO</a>
+  </div>
+</footer>
+
+<div class="credits">
+  <strong>© 2026 Kanika Reddu - Akashganga. All rights reserved.</strong><br>
+  Site design, code and written content created by Kanika Reddu and team Akashganga. Mission photos and data are courtesy of NASA and other space agencies, and remain theirs.
+</div>
+
+<div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div class="eyebrow">LUNAR ARCHIVE / FULL RECORD</div>
+    <h2 id="modal-title"></h2>
+    <div id="modal-description"></div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* LUNAR ARCHIVE DATABASE
+   Coordinates are approximate; verify against primary mission documentation.
+   Fields: id, mission, year, category, status, statusClass, lat, lon,
+           name, object, description, purpose, science, why it remains, source */
+const S = (id,m,y,c,st,sc,lat,lon,n,o,d,p,s,r,u) => ({id,m,y,c,st,sc,lat,lon,n,o,d,p,s,r,u});
+const NSS = "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=";
+const ALSEP = "https://nssdc.gsfc.nasa.gov/planetary/lunar/apollo.html";
+const ILRS = "https://ilrs.gsfc.nasa.gov/science/scienceContributions/lunar.html";
+
+const equipment = [
+S("luna9","Luna 9",1966,"lander","Inactive","inactive",7.08,-64.37,"Luna 9 Lander","Soviet soft lander","Luna 9 made the first controlled soft landing on the Moon, in Oceanus Procellarum.","Prove a spacecraft could land intact and send back images from the surface.","Its panoramas showed the surface could support a lander, easing fears of a deep dust layer.","Its batteries ran down after a few days and it was never designed to leave.",NSS+"1966-006A"),
+S("surveyor3","Surveyor 3",1967,"lander","Parts returned by Apollo 12","inactive",-2.99,-23.34,"Surveyor 3 Lander","Robotic soft lander","A NASA lander that scooped soil and photographed the surface in Oceanus Procellarum.","Test landing techniques and study soil mechanics ahead of Apollo.","Soil-scoop and camera data informed Apollo landing-site planning.","Apollo 12 astronauts walked to it in 1969 and returned its camera and parts for study; the rest stayed.",NSS+"1967-035A"),
+S("apollo11","Apollo 11",1969,"lander","Left on Moon","inactive",0.674,23.473,"Apollo 11 Lunar Module Descent Stage","Lunar Module Descent Stage","Eagle’s descent stage stayed behind when Neil Armstrong and Buzz Aldrin lifted off in the ascent stage.","Platform and propulsion for the first crewed lunar landing.","Enabled the first human exploration and sample collection on the Moon.","Only the ascent stage returned to lunar orbit; the descent stage served as its launch pad.","https://www.nasa.gov/mission/apollo-11/"),
+S("apollo11reflector","Apollo 11",1969,"experiment","Passive scientific instrument","passive",0.674,23.473,"Apollo 11 Laser Retroreflector","Laser Retroreflector Array","A panel of corner-cube reflectors deployed by the Apollo 11 astronauts.","Reflect laser pulses from Earth back toward their source.","Lunar laser ranging measures the Earth–Moon distance and helps study lunar motion and gravity.","It has no powered electronics or moving parts, so it can keep working passively.",ILRS),
+S("apollo12alsep","Apollo 12",1969,"experiment","No longer transmitting","inactive",-3.012,-23.421,"Apollo 12 ALSEP","Apollo Lunar Surface Experiments Package","Instruments deployed by Pete Conrad and Alan Bean.","Measure the lunar environment and interior.","Contributed data on seismic activity, the lunar atmosphere and physical properties.","The experiment network was shut down in 1977.",ALSEP),
+S("apollo13s4b","Apollo 13",1970,"impact","Impact site","impact",-2.75,-27.86,"Apollo 13 S-IVB Impact","Spent rocket stage impact","After the Apollo 13 emergency, the S-IVB upper stage was still sent on to strike the Moon as planned.","Create a known seismic source for instruments left by Apollo 12.","The impact rang the Moon like a bell and gave seismologists data on its interior.","The stage was destroyed on impact; its debris remains at the site.","https://www.nasa.gov/mission/apollo-13/"),
+S("luna16","Luna 16",1970,"lander","Left on Moon","inactive",-0.513,56.363,"Luna 16 Lander","Robotic sample-return lander","Luna 16 was the first robotic mission to return lunar soil to Earth.","Collect lunar material and transfer it into a return capsule.","The sample allowed laboratory study of lunar soil.","Only the return capsule left; the lander stayed behind.",NSS+"1970-072A"),
+S("lunokhod1","Luna 17",1970,"rover","Inactive","inactive",38.237,-35.001,"Lunokhod 1","Robotic lunar rover","The first successful remote-controlled rover on another world.","Explore the surface and transmit images and measurements.","Investigated lunar soil and surface conditions and returned panoramas.","Operations ended after months when contact was lost.",NSS+"1970-095A"),
+S("apollo14alsep","Apollo 14",1971,"experiment","No longer transmitting","inactive",-3.645,-17.471,"Apollo 14 ALSEP","Apollo Lunar Surface Experiments Package","A scientific instrument package deployed during Apollo 14.","Investigate seismic activity and other lunar properties.","Helped scientists understand the Moon’s internal structure and surface environment.","Left in place; transmissions ended when the network shut down in 1977.",ALSEP),
+S("apollo15rover","Apollo 15",1971,"rover","Left on Moon","inactive",26.132,3.634,"Apollo 15 Lunar Rover","Lunar Roving Vehicle","The first Lunar Roving Vehicle let astronauts travel much farther from the lander.","Extend exploration and sample collection over a larger area.","Widened the range of geological exploration.","It was not designed to return to Earth.","https://www.nasa.gov/mission/apollo-15/"),
+S("apollo15reflector","Apollo 15",1971,"experiment","Passive scientific instrument","passive",26.132,3.634,"Apollo 15 Laser Retroreflector","Laser Retroreflector Array","A larger laser reflector array deployed during Apollo 15.","Return laser pulses sent from Earth.","Supports long-term lunar laser ranging research.","As a passive instrument it needs no power.",ILRS),
+S("apollo16alsep","Apollo 16",1972,"experiment","No longer transmitting","inactive",-8.973,15.501,"Apollo 16 ALSEP","Apollo Lunar Surface Experiments Package","Instruments deployed in the lunar highlands.","Study the interior, magnetic properties and seismic activity.","Gave information about the highlands and internal structure.","Left at the site; the Apollo network ended in 1977.",ALSEP),
+S("apollo17rover","Apollo 17",1972,"rover","Left on Moon","inactive",20.191,30.772,"Apollo 17 Lunar Rover","Lunar Roving Vehicle","The final Apollo rover, driven by Eugene Cernan and Harrison Schmitt.","Support exploration of the Taurus-Littrow valley.","Helped the crew cover more ground and gather a wider variety of samples.","It was not designed to return to Earth.","https://www.nasa.gov/mission/apollo-17/"),
+S("lunokhod2","Luna 21",1973,"rover","Inactive","inactive",25.85,30.92,"Lunokhod 2","Robotic lunar rover","The second Soviet Lunokhod rover, which travelled farther than its predecessor.","Investigate terrain and surface properties.","Returned surface images and data on the lunar environment.","The mission ended when operations could no longer continue.",NSS+"1973-001A"),
+S("change3","Chang’e 3",2013,"rover","Inactive","inactive",44.12,-19.51,"Chang’e 3 Lander and Yutu","Lander and rover","China’s first lunar soft landing, carrying the Yutu rover.","Survey the landing region and test surface-operation technology.","Radar and spectrometer data on the local geology and subsurface.","Yutu stopped moving after a mobility fault; the hardware stays in place.",NSS+"2013-070A"),
+S("chang-e4","Chang’e 4",2019,"lander","Surface mission (verify current)","active",-45.457,177.588,"Chang’e 4 Lander and Yutu-2","Lander and Yutu-2 rover","The first soft landing on the far side of the Moon.","Investigate the far-side surface and subsurface.","Images and measurements on far-side geology.","Designed for surface operations; check current mission updates for its condition.","https://www.cnsa.gov.cn/"),
+S("beresheet","Beresheet",2019,"impact","Crashed on landing","impact",32.59,19.35,"Beresheet Crash Site","Private lander impact site","Israel’s privately built lander failed during descent and crashed in Mare Serenitatis.","Make Israel’s first lunar landing and the first by a private company.","Its descent and orbital data still informed later private missions.","A fault during braking caused a crash; wreckage remains at the site.","https://www.spaceil.com/"),
+S("change5","Chang’e 5",2020,"lander","Left on Moon","inactive",43.06,-51.92,"Chang’e 5 Lander","Sample-return lander","Chang’e 5 returned about 1.7 kg of young lunar basalt to Earth.","Collect samples from a region of relatively recent volcanism.","The samples refined estimates of when lunar volcanism ended.","Only the return capsule came home; the lander stayed.",NSS+"2020-087A"),
+S("lcross","LCROSS",2009,"impact","Impact site","impact",-84.7,-48.0,"LCROSS Impact Site","Impact and debris site","NASA’s LCROSS sent an impactor into the Cabeus crater near the south pole.","Observe the impact plume for water and other materials.","Provided evidence of water and compounds in permanently shadowed regions.","The impact was intentional and the impactor was destroyed as planned.","https://science.nasa.gov/mission/lcross/"),
+S("chandrayaan3","Chandrayaan-3",2023,"lander","Surface mission completed","inactive",-69.373,32.319,"Vikram Lander and Pragyan Rover","Lander and rover","India’s Chandrayaan-3 achieved a soft landing near the south polar region.","Run in-situ experiments on the surface.","Studied lunar soil, temperature and the local environment.","The mission was built for one lunar day; the hardware stayed after it ended.","https://www.isro.gov.in/Chandrayaan3.html"),
+S("slim","SLIM",2024,"lander","Mission ended","inactive",-13.3,25.25,"SLIM Lander","JAXA precision lander","Japan’s SLIM landed within tens of metres of its target despite ending up on its nose.","Demonstrate pinpoint landing.","Showed precision landing is feasible, and returned images and spectra of rocks.","It was not designed to be recovered; it was mostly shut down after the surface mission.","https://global.jaxa.jp/projects/sas/slim/"),
+S("im1","IM-1",2024,"lander","Mission ended","inactive",-80.13,1.44,"Odysseus (IM-1)","Commercial lander","Intuitive Machines’ Odysseus was the first commercial lander on the Moon and the first US landing since Apollo 17.","Deliver NASA and commercial payloads near the south pole.","It operated for about a week despite tipping onto its side at touchdown.","Its surface mission ended when its power ran out.","https://www.intuitivemachines.com/im-1"),
+S("chang-e6","Chang’e 6",2024,"lander","Left on Moon","inactive",-41.64,-153.99,"Chang’e 6 Lander","Far-side sample-return lander","The first mission to return samples from the Moon’s far side.","Collect material from the South Pole–Aitken basin region.","Far-side samples give a new look at the Moon’s two very different hemispheres.","Only the return capsule came home; the lander stayed.","https://www.cnsa.gov.cn/"),
+S("blueghost","Blue Ghost M1",2025,"lander","Mission completed","inactive",18.56,61.81,"Blue Ghost Mission 1","Commercial lander","Firefly’s Blue Ghost landed in Mare Crisium and completed a full lunar day of operations.","Carry NASA science payloads for a commercial delivery.","Returned surface science and imagery, including lunar dusk.","It was built for roughly one lunar day and shut down as night fell.","https://fireflyspace.com/missions/blue-ghost-mission-1/")
+];
+
+/* CURRENT MISSIONS (reviewed Nov 2026) */
+const current = [
+["♧","Artemis Program","USA<br>Human lunar exploration","Artemis II crewed flight completed April 2026; Artemis III Earth-orbit test targeted for 2027"],
+["☾","Chang’e 7","China<br>South polar exploration","Launch postponed in August 2026; now expected in 2027"],
+["✧","Luna-26","Russia<br>Lunar orbital research","Planned; schedule unconfirmed"],
+["✦","Commercial Missions","Various<br>Technology demonstrations","Odysseus (2024) and Blue Ghost (2025) landed; more CLPS flights planned"]
+];
+$("current-grid").innerHTML = current.map(c => `<div class="current-card"><div class="current-icon">${c[0]}</div><h3>${c[1]}</h3><p>${c[2]}</p><span class="mission-state">${c[3]}</span></div>`).join("");
+
+/* THUMBNAILS (category glyphs) */
+const G = {
+ lander:'<path d="M45 58h30l-5-18H50zM50 40l4-9h12l4 9M45 58l-8 10M75 58l8 10"/>',
+ rover:'<path d="M38 54h44l-5-12H44zM52 42v-9l16-4"/><circle cx="46" cy="62" r="7"/><circle cx="74" cy="62" r="7"/>',
+ experiment:'<path d="M42 66h36M60 66V46M44 38c0-9 32-9 32 0z"/><path d="M60 46l-12-8M60 46l12-8"/>',
+ impact:'<ellipse cx="60" cy="56" rx="26" ry="9"/><path d="M34 56l-8-6M86 56l8-6M60 47V30M48 49l-7-14M72 49l7-14"/>'
+};
+const thumb = c => `<svg viewBox="0 0 120 80" aria-hidden="true">${G[c] || G.lander}</svg>`;
+
+/* REAL PHOTOS: fetched from the NASA Image and Video Library (images-api.nasa.gov).
+   Each record uses the first image result for its query; to pin an exact photo,
+   use "id:<NASA_ID>" instead of a search phrase. Falls back to the icon on any failure. */
+const PHOTO_Q = {luna9:"Luna 9 lander",surveyor3:"Surveyor 3 Apollo 12 Conrad",apollo11:"Apollo 11 lunar module Eagle",apollo11reflector:"Apollo 11 laser ranging retroreflector",apollo12alsep:"Apollo 12 ALSEP Alan Bean",apollo13s4b:"Apollo 13 S-IVB impact crater LRO",luna16:"Luna 16 LRO",lunokhod1:"Lunokhod 1 LRO",apollo14alsep:"Apollo 14 ALSEP",apollo15rover:"Apollo 15 lunar roving vehicle Irwin",apollo15reflector:"Apollo 15 laser retroreflector",apollo16alsep:"Apollo 16 ALSEP",apollo17rover:"Apollo 17 lunar roving vehicle Cernan",lunokhod2:"Lunokhod 2 LRO",change3:"Chang'e 3 LRO","chang-e4":"Chang'e 4 LRO",beresheet:"Beresheet crash site LRO",change5:"Chang'e 5 LRO",lcross:"LCROSS impact",chandrayaan3:"Chandrayaan-3 Vikram LRO",slim:"SLIM lander LRO",im1:"Odysseus IM-1 LRO","chang-e6":"Chang'e 6 LRO",blueghost:"Blue Ghost lunar lander"};
+/* A photo is accepted for a record only if its NASA title/description names that mission
+   (and, for Apollo, the object). Each photo is used once. If nothing genuine is found the
+   record keeps its illustration instead of showing an unrelated or repeated picture. */
+const PHOTO_KW = {
+  luna9:[/luna[- ]?9\b/i], surveyor3:[/surveyor[- ]?(3|iii)\b/i],
+  apollo11:[/apollo[- ]?11/i,/lunar module|\bLM\b|eagle|descent/i], apollo11reflector:[/apollo[- ]?11/i,/reflector|laser/i],
+  apollo12alsep:[/apollo[- ]?12/i,/alsep|experiment|instrument|seismometer/i], apollo13s4b:[/apollo[- ]?13|S-IVB/i,/impact|S-IVB|crater/i],
+  luna16:[/luna[- ]?16\b/i], lunokhod1:[/lunokhod[- ]?1\b|luna[- ]?17/i],
+  apollo14alsep:[/apollo[- ]?14/i,/alsep|experiment|instrument|seismometer/i], apollo15rover:[/apollo[- ]?15/i,/rover|LRV|roving/i],
+  apollo15reflector:[/apollo[- ]?15/i,/reflector|laser/i], apollo16alsep:[/apollo[- ]?16/i,/alsep|experiment|instrument|seismometer/i],
+  apollo17rover:[/apollo[- ]?17/i,/rover|LRV|roving/i], lunokhod2:[/lunokhod[- ]?2\b|luna[- ]?21/i],
+  change3:[/chang.?e.?3\b|yutu(?!-?2)/i], "chang-e4":[/chang.?e.?4\b|yutu-?2/i], beresheet:[/beresheet/i],
+  change5:[/chang.?e.?5\b/i], lcross:[/lcross/i], chandrayaan3:[/chandrayaan.?3|vikram|pragyan/i],
+  slim:[/\bSLIM\b|smart lander/i], im1:[/odysseus|\bIM-?1\b|intuitive machines/i], "chang-e6":[/chang.?e.?6\b/i],
+  blueghost:[/blue ghost|firefly/i]
+};
+const kwOK = (it, ph) => (PHOTO_KW[it.id] || []).every(re => re.test(ph.text));
+const qCache = {};
+function search(q, n = 60) {
+  const key = q + "|" + n;
+  if (qCache[key]) return qCache[key];
+  const url = "https://images-api.nasa.gov/search?media_type=image&page_size=" + n + "&" + (q.startsWith("id:") ? "nasa_id=" + encodeURIComponent(q.slice(3)) : "q=" + encodeURIComponent(q));
+  return qCache[key] = fetch(url).then(r => r.ok ? r.json() : Promise.reject())
+    .then(j => ((j.collection || {}).items || [])
+      .filter(x => x.links && x.links[0] && x.links[0].href && x.data && x.data[0])
+      .map(x => ({ src: x.links[0].href, title: x.data[0].title || "", id: x.data[0].nasa_id,
+                   text: [x.data[0].title, x.data[0].description, (x.data[0].keywords || []).join(" ")].join(" ") })))
+    .catch(() => []);
+}
+
+/* Archive pool: well-known NASA Moon photographs (Earthrise, Apollo surface scenes, orbiter views, Artemis II).
+   A record whose own mission has no matching photo gets one of these instead, so no card is empty.
+   Each one is used once, and the detail panel says it is an archive photograph, not that exact object. */
+const POOL_Q = ["Earthrise Apollo 8","Apollo 17 Blue Marble Earth","Apollo 11 Aldrin visor reflection","Apollo 15 Irwin flag Hadley","Apollo 17 Schmitt boulder","Apollo 16 Young salute","Apollo 14 Shepard lunar surface","Apollo 12 Conrad Bean","Moon crescent Earth","Tycho crater LRO","Apollo 17 lunar surface panorama","Apollo 11 footprint lunar soil","Artemis II Moon Orion","Orion lunar flyby Earth","Apollo 10 Moon crater","Apollo 13 Moon far side","Apollo 15 Hadley Rille","Apollo 16 Descartes","Apollo 17 Taurus-Littrow","Apollo 11 Armstrong lunar surface","Apollo 12 Intrepid lunar surface","Moon Earth from space","Apollo 14 Fra Mauro","Apollo 8 lunar far side"];
+let poolPromise = null;
+function getPool() {
+  return poolPromise ||= Promise.all(POOL_Q.map(q => search(q, 3))).then(lists => {
+    const seen = new Set(), out = [];
+    for (let r = 0; r < 3; r++) lists.forEach(l => { const x = l[r]; if (x && !seen.has(x.id)) { seen.add(x.id); out.push(x); } });
+    return out;
+  });
+}
+
+const usedPhotos = new Set(), assigned = {};
+function attachPhoto(box, it, credit, still) {
+  const alive = () => box.isConnected && (!still || still());
+  const show = (ph, img) => {
+    if (!alive()) return;
+    img.classList.add("ok");
+    box.appendChild(img);
+    if (credit) credit.innerHTML = `${ph.fb ? "Archive photograph from NASA’s lunar collection (not this exact object)" : "Photo"}: NASA Image and Video Library · <a href="https://images.nasa.gov/details/${encodeURIComponent(ph.id)}" target="_blank" rel="noopener">${esc(ph.title)}</a>`;
+  };
+  if (assigned[it.id]) {
+    const ph = assigned[it.id], img = new Image();
+    img.alt = ph.title; img.onload = () => show(ph, img); img.src = ph.src;
+    return;
+  }
+  const sources = [...new Set([PHOTO_Q[it.id] || it.n, it.n, it.m + " " + it.o])];
+  let si = 0, queue = [], fb = false;
+  const next = () => {
+    if (!alive()) return;
+    while (queue.length && (usedPhotos.has(queue[0].id) || (!fb && !kwOK(it, queue[0])))) queue.shift();
+    if (queue.length) {
+      const ph = Object.assign({}, queue.shift(), { fb }), img = new Image();
+      usedPhotos.add(ph.id);                 // claim before loading so no other card takes it
+      img.alt = ph.title;
+      img.onload = () => { assigned[it.id] = ph; show(ph, img); };
+      img.onerror = () => { usedPhotos.delete(ph.id); next(); };
+      img.src = ph.src;
+    } else if (si < sources.length) {
+      search(sources[si++]).then(l => { queue = l.slice(); next(); });
+    } else if (!fb) {
+      fb = true;
+      getPool().then(pool => {
+        const k = equipment.indexOf(it) % Math.max(pool.length, 1);
+        queue = pool.slice(k).concat(pool.slice(0, k));
+        next();
+      });
+    }
+  };
+  next();
+}
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  io.unobserve(e.target);
+  attachPhoto(e.target, equipment[+e.target.dataset.i]);
+}), { rootMargin: "200px" });
+
+/* STAR BACKGROUND */
+const sb = $("star-background");
+for (let i = 0; i < 180; i++) {
+  const s = document.createElement("div"), z = Math.random() * 2 + .5;
+  s.style.cssText = `position:absolute;width:${z}px;height:${z}px;border-radius:50%;background:#e5efff;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${Math.random()*.7+.15};box-shadow:0 0 5px rgba(190,215,255,.7)`;
+  sb.appendChild(s);
+}
+
+/* THREE.JS MOON */
+const container = $("moon-container");
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, .1, 100);
+const HOME = new THREE.Vector3(0, 0, 3.25);
+camera.position.copy(HOME);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0xffffff, .1));
+const sun = new THREE.DirectionalLight(0xffffff, 3.4); scene.add(sun);
+const SUN_OFF = new THREE.Vector3(-3.5, 1.8, 1.5);   // sun stays beside the camera so a realistic terminator is always visible
+
+/* NASA SVS "CGI Moon Kit" colour map (LRO data); falls back to the three.js sample map if blocked. */
+const moonMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 1, metalness: 0, bumpScale: 1.2 });
+const TEX = ["https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg", "https://threejs.org/examples/textures/planets/moon_1024.jpg"];
+const texLoader = new THREE.TextureLoader().setCrossOrigin("anonymous");
+(function loadTex(n) {
+  texLoader.load(TEX[n], t => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    moonMat.map = t; moonMat.bumpMap = t; moonMat.color.setHex(0xffffff); moonMat.needsUpdate = true;
+  }, undefined, () => { if (n + 1 < TEX.length) loadTex(n + 1); });
+})(0);
+const moon = new THREE.Mesh(new THREE.SphereGeometry(1, 192, 192), moonMat);
+scene.add(moon);
+
+/* MARKERS
+   Lat/lon -> sphere point matches three.js UV layout: lon 0 at +x (texture centre),
+   east longitudes toward -z. Sites within 1 degree share a ring so overlapping
+   markers (e.g. a lander and its reflector) stay separately clickable. */
+function getPosition(lat, lon, r = 1.018) {
+  const phi = (90 - lat) * Math.PI / 180, th = (lon + 180) * Math.PI / 180;
+  return new THREE.Vector3(-Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)).multiplyScalar(r);
+}
+const groups = {};
+equipment.forEach((it, i) => (groups[Math.round(it.lat) + "," + Math.round(it.lon)] ||= []).push(i));
+
+const markerGroup = new THREE.Group(); moon.add(markerGroup);
+const markers = [];
+const DOT = 0xe6efff, SEL = 0xffd27a;
+
+equipment.forEach((it, i) => {
+  const m = new THREE.Group();
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(.018, 20, 20), new THREE.MeshBasicMaterial({ color: DOT }));
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(.032, 20, 20), new THREE.MeshBasicMaterial({ color: 0xc7dcff, transparent: true, opacity: .25 }));
+  const outer = new THREE.Mesh(new THREE.SphereGeometry(.05, 20, 20), new THREE.MeshBasicMaterial({ color: 0xb7d0f8, transparent: true, opacity: .09 }));
+  m.add(outer, halo, dot);
+  m.userData = { i, dot };
+
+  const pos = getPosition(it.lat, it.lon);
+  const grp = groups[Math.round(it.lat) + "," + Math.round(it.lon)];
+  if (grp.length > 1) {
+    const k = grp.indexOf(i), a = 2 * Math.PI * k / grp.length;
+    let t1 = new THREE.Vector3(0, 1, 0).cross(pos);
+    if (t1.length() < 1e-3) t1 = new THREE.Vector3(1, 0, 0);
+    t1.normalize();
+    const t2 = pos.clone().cross(t1).normalize();
+    pos.addScaledVector(t1, Math.cos(a) * .045).addScaledVector(t2, Math.sin(a) * .045).setLength(1.018);
+  }
+  m.position.copy(pos);
+  markerGroup.add(m);
+  markers.push(m);
+});
+
+/* CONTROLS (zoom via buttons keeps page scroll free; pan-y lets phones scroll past the Moon) */
+const controls = new OrbitControls(camera, renderer.domElement);
+Object.assign(controls, { enableDamping: true, dampingFactor: .06, enableZoom: false, enablePan: false, rotateSpeed: .45 });
+renderer.domElement.style.touchAction = "pan-y";
+
+const SPIN = 0.12;   // automatic rotation speed, radians per second (about 52 s per turn)
+let spinning = true, flight = null, selected = -1;
+function setSpin(v) {
+  spinning = v;
+  const b = $("spin-toggle");
+  b.textContent = v ? "Rotation: on" : "Rotation: off";
+  b.setAttribute("aria-pressed", String(v));
+}
+$("spin-toggle").onclick = () => setSpin(!spinning);
+
+function flyTo(to, ms = 1100) {
+  if (reduce) { camera.position.copy(to); return; }
+  flight = { t0: performance.now(), ms, from: camera.position.clone(), to: to.clone() };
+}
+function zoom(f) {
+  const len = THREE.MathUtils.clamp(camera.position.length() * f, 1.8, 5);
+  flyTo(camera.position.clone().setLength(len), 250);
+}
+$("zoom-in").onclick = () => zoom(.82);
+$("zoom-out").onclick = () => zoom(1.2);
+$("reset-view").onclick = () => { setSpin(true); flyTo(HOME, 900); };
+
+/* PICKING, TOOLTIP, CLICK */
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+function pick(ev) {
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  const h = ray.intersectObjects(markers, true);
+  if (!h.length) return -1;
+  const m = ray.intersectObject(moon)[0];
+  if (m && m.distance < h[0].distance - .005) return -1;   // marker is behind the limb
+  let o = h[0].object;
+  while (o && o.userData.i === undefined) o = o.parent;
+  return o ? o.userData.i : -1;
+}
+
+const tip = $("tip");
+container.addEventListener("pointermove", ev => {
+  if (ev.buttons) { tip.style.display = "none"; return; }
+  const i = pick(ev);
+  container.style.cursor = i >= 0 ? "pointer" : "";
+  if (i < 0) { tip.style.display = "none"; return; }
+  tip.textContent = `${equipment[i].n} (${equipment[i].y})`;
+  tip.style.left = ev.clientX + 14 + "px";
+  tip.style.top = ev.clientY + 14 + "px";
+  tip.style.display = "block";
+});
+container.addEventListener("pointerleave", () => tip.style.display = "none");
+
+let down = null;
+container.addEventListener("pointerdown", e => down = { x: e.clientX, y: e.clientY });
+container.addEventListener("click", ev => {
+  if (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 5) return;  // was a drag
+  const i = pick(ev);
+  if (i >= 0) { select(i, true); return; }
+
+  const hit = ray.intersectObject(moon)[0];
+  if (!hit) return;
+  const local = moon.worldToLocal(hit.point.clone()).normalize();
+  let best = -1, ang = Infinity;
+  equipment.forEach((it, k) => {
+    const a = local.angleTo(getPosition(it.lat, it.lon, 1).normalize());
+    if (a < ang) { ang = a; best = k; }
+  });
+  if (ang < THREE.MathUtils.degToRad(8)) select(best, true); else showUncatalogued();
+});
+
+/* ARCHIVE CARDS: search, filters, grid / timeline */
+const archive = $("archive-cards");
+let filter = "all", query = "", view = "grid";
+
+function render() {
+  const q = query.trim().toLowerCase();
+  let list = equipment.map((it, i) => ({ it, i })).filter(({ it }) =>
+    (filter === "all" || it.c === filter) &&
+    (it.n + " " + it.m + " " + it.d + " " + it.st + " " + it.o + " " + it.y).toLowerCase().includes(q));
+  if (view === "timeline") list.sort((a, b) => a.it.y - b.it.y);
+
+  $("result-count").textContent = `${list.length} of ${equipment.length} records`;
+  archive.innerHTML = list.length ? "" : '<p style="color:#aebbd0;font-size:12px">No matching archive records found.</p>';
+
+  let lastYear = null;
+  list.forEach(({ it, i }) => {
+    if (view === "timeline" && it.y !== lastYear) {
+      archive.insertAdjacentHTML("beforeend", `<h4 class="year-head">${esc(it.y)}</h4>`);
+      lastYear = it.y;
+    }
+    const card = document.createElement("article");
+    card.className = "archive-card" + (i === selected ? " selected" : "");
+    card.dataset.id = it.id;
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `${it.n}, ${it.y}`);
+    card.innerHTML = `<div class="card-image">${thumb(it.c)}<span class="image-label">${esc(it.y)}</span></div>
+      <div class="card-content"><div class="card-year">${esc(it.m)}</div><h3>${esc(it.n)}</h3><p>${esc(it.o)}</p>
+      <span class="status ${esc(it.sc)}">${esc(it.st)}</span></div>`;
+    const box = card.querySelector(".card-image"); box.dataset.i = i; io.observe(box);
+    card.onclick = () => select(i);
+    card.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(i); } };
+    archive.appendChild(card);
+  });
+}
+
+document.querySelectorAll("#filters .filter-btn").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#filters .filter-btn").forEach(x => x.classList.toggle("active", x === b));
+  filter = b.dataset.filter; render();
+});
+document.querySelectorAll("#view-toggle .filter-btn").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#view-toggle .filter-btn").forEach(x => x.classList.toggle("active", x === b));
+  view = b.dataset.view; render();
+});
+$("search-input").addEventListener("input", e => { query = e.target.value; render(); });
+
+/* SELECTION, DETAIL PANEL, DEEP LINKS */
+const coords = it => `${Math.abs(it.lat).toFixed(3)}° ${it.lat >= 0 ? "N" : "S"}, ${Math.abs(it.lon).toFixed(3)}° ${it.lon >= 0 ? "E" : "W"}`;
+
+function mark(i) {
+  selected = i;
+  markers.forEach((m, k) => {
+    m.userData.dot.material.color.setHex(k === i ? SEL : DOT);
+    m.userData.sel = k === i;
+  });
+  document.querySelectorAll(".archive-card").forEach(c => c.classList.toggle("selected", i >= 0 && c.dataset.id === equipment[i].id));
+}
+
+function select(i, fromMoon = false) {
+  const it = equipment[i];
+  if (!it) return;
+  mark(i);
+  $("detail-year").textContent = it.y;
+  $("detail-title").textContent = it.m;
+  $("detail-subtitle").textContent = it.o;
+  $("detail-image").innerHTML = thumb(it.c);
+  $("photo-credit").textContent = "";
+  attachPhoto($("detail-image"), it, $("photo-credit"), () => selected === i);
+  $("detail-body").innerHTML = `
+    <p>${esc(it.d)}</p><div class="detail-rule"></div>
+    <p><strong>Mission:</strong> ${esc(it.m)}</p>
+    <p><strong>Purpose:</strong> ${esc(it.p)}</p>
+    <p><strong>Science:</strong> ${esc(it.s)}</p>
+    <p><strong>Why it remains:</strong> ${esc(it.r)}</p><div class="detail-rule"></div>
+    <p><strong>Status:</strong> ${esc(it.st)}</p>
+    <p><strong>Location:</strong> ${coords(it)}</p>
+    <a class="detail-link" href="${esc(it.u)}" target="_blank" rel="noopener">VIEW SOURCE ↗</a>
+    <a class="detail-link" href="#" id="full-details">FULL DETAILS →</a>`;
+  $("full-details").onclick = e => { e.preventDefault(); openModal(i); };
+
+  try { history.replaceState(null, "", "#site-" + it.id); } catch (e) {}
+
+  // Stop the spin and bring the site to the front of the camera.
+  setSpin(false);
+  const dir = markers[i].getWorldPosition(new THREE.Vector3()).normalize();
+  flyTo(dir.multiplyScalar(Math.max(2.2, camera.position.length())));
+
+  const narrow = matchMedia("(max-width:950px)").matches;
+  if (fromMoon || narrow) setTimeout(() => $("detail-panel").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }), fromMoon ? 900 : 0);
+}
+
+function showUncatalogued() {
+  mark(-1);
+  $("detail-year").textContent = "UNMAPPED";
+  $("detail-title").textContent = "Uncatalogued location";
+  $("detail-subtitle").textContent = "Lunar surface";
+  $("detail-image").innerHTML = ""; $("photo-credit").textContent = "";
+  $("detail-body").innerHTML = "<p>This region does not match a record in the archive.</p><p>That does not mean no human-made object is present here; the archive is still growing.</p>";
+}
+
+$("clear-detail").onclick = () => {
+  mark(-1);
+  $("detail-year").textContent = "";
+  $("detail-title").textContent = "Select a record";
+  $("detail-subtitle").textContent = "Lunar archive";
+  $("detail-image").innerHTML = ""; $("photo-credit").textContent = "";
+  $("detail-body").innerHTML = "<p>Select an archive card or a marker on the Moon.</p>";
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  setSpin(true);
+};
+
+function fromHash() {
+  const m = location.hash.match(/^#site-(.+)$/);
+  if (!m) return;
+  const i = equipment.findIndex(e => e.id === m[1]);
+  if (i >= 0 && i !== selected) select(i);
+}
+addEventListener("hashchange", fromHash);
+
+/* FULL DETAIL MODAL (focus is moved in and restored on close) */
+const modal = $("detail-modal");
+let lastFocus = null;
+function openModal(i) {
+  const it = equipment[i];
+  lastFocus = document.activeElement;
+  $("modal-title").textContent = it.n;
+  $("modal-description").innerHTML = `
+    <p><strong>Mission:</strong> ${esc(it.m)}</p><p><strong>Year:</strong> ${esc(it.y)}</p>
+    <p><strong>Object:</strong> ${esc(it.o)}</p><p><strong>Known status:</strong> ${esc(it.st)}</p>
+    <p><strong>History:</strong><br>${esc(it.d)}</p><p><strong>Purpose:</strong><br>${esc(it.p)}</p>
+    <p><strong>Scientific contribution:</strong><br>${esc(it.s)}</p>
+    <p><strong>Why it remains on the Moon:</strong><br>${esc(it.r)}</p>
+    <p><strong>Approximate coordinates:</strong><br>${coords(it)}</p>
+    <p><a class="detail-link" href="${esc(it.u)}" target="_blank" rel="noopener">OPEN REFERENCE SOURCE ↗</a></p>
+    <p class="modal-note">Archive record for educational use. Coordinates, locations and current status should be verified against primary mission documentation before scientific use.</p>`;
+  modal.style.display = "flex";
+  $("modal-close").focus();
+}
+function closeModal() { modal.style.display = "none"; if (lastFocus) lastFocus.focus(); }
+$("modal-close").onclick = closeModal;
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+/* KEYBOARD */
+document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.style.display === "flex") closeModal(); });
+$("moon-area").addEventListener("keydown", e => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  e.preventDefault();
+  const n = equipment.length, step = e.key === "ArrowRight" ? 1 : -1;
+  select(selected < 0 ? 0 : (selected + step + n) % n, false);
+});
+
+/* ANIMATION */
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+let prev = 0;
+function animate(time) {
+  requestAnimationFrame(animate);
+  const dt = prev ? Math.min((time - prev) / 1000, .05) : 0;
+  prev = time;
+
+  if (spinning) moon.rotation.y += dt * SPIN;
+
+  if (flight) {
+    const k = Math.min((performance.now() - flight.t0) / flight.ms, 1), e = ease(k);
+    const dir = flight.from.clone().normalize().lerp(flight.to.clone().normalize(), e).normalize();
+    camera.position.copy(dir.multiplyScalar(THREE.MathUtils.lerp(flight.from.length(), flight.to.length(), e)));
+    if (k === 1) flight = null;
+  }
+  sun.position.copy(camera.position).add(SUN_OFF.clone().applyQuaternion(camera.quaternion));
+  controls.update();
+
+  markers.forEach((m, i) => m.scale.setScalar((m.userData.sel ? 1.5 : 1) + (reduce ? 0 : Math.sin(time * .0025 + i) * .12)));
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(animate);
+
+new ResizeObserver(() => {
+  const w = container.clientWidth, h = container.clientHeight;
+  if (!w || !h) return;
+  camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+}).observe(container);
+
+render();
+fromHash();
+</script>
+</body>
+</html>
